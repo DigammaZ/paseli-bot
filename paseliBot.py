@@ -59,25 +59,20 @@ async def give(ctx, amount: int, otherUser: discord.Member):
 
     if primary_id not in amounts:
         await bot.say('You do not have a Paseli account.')
-        return
     elif other_id not in amounts:
         await bot.say('The other party does not have a Paseli account.')
-        return
     elif amounts[primary_id] < amount:
         await bot.say('Insufficient Paseli, find a Recharge Kiosk.')
-        return
     else:
         amounts[primary_id] -= amount
         amounts[other_id] += amount
         await bot.say('{0} has been given {1} WHOLE PASELI!'.format(otherUser.mention, amount))
-    _save()
+        _save()
 
 @bot.command(pass_context=True)
 async def grind(ctx,level: int = 19):
     if level == 19:
-        song = grind19()
-        song = ''.join(song)
-        await bot.say('Go play {0}.'.format(song))
+        await bot.say('Go play {0}.'.format(grind19()))
 
 def _save():
     with open('amounts.json', 'w+') as f:
