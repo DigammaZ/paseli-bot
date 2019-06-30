@@ -16,3 +16,9 @@ __pycache__
 #############
 
 discord.log
+
+########
+# JSON #
+########
+
+amounts.json
