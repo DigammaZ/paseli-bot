@@ -1,8 +1,8 @@
 import random
 
-def grind19(number : int = 1):
+def grind19():
 
-	sdvx19 = {
+	sdvx19 = [
 		"A Lasting Promise",
 		"Absolute Domination",	
 		"Awakening",	
@@ -63,7 +63,7 @@ def grind19(number : int = 1):
 		"大宇宙ステージ",	
 		"Ganymede kamome mix",	
 		"Max Burning!!"
-	}
+	]
 
-	draw = random.sample(sdvx19,number)
+	draw = random.choice(sdvx19)
 	return draw
