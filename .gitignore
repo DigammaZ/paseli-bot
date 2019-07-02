@@ -1,0 +1,24 @@
+###############
+# Credentials #
+###############
+
+discord_credentials.py
+
+#########
+# Cache #
+#########
+
+__pycache__
+*.db-journal
+
+#############
+# Log Files #
+#############
+
+discord.log
+
+########
+# JSON #
+########
+
+amounts.json
