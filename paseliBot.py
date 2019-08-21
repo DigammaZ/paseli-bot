@@ -1,5 +1,6 @@
 from discord.ext import commands
 from grind19 import grind19
+from jisho import search_jisho
 from discord_credentials import *
 import discord
 import json
@@ -70,9 +71,18 @@ async def give(ctx, amount: int, otherUser: discord.Member):
     _save()
 
 @bot.command(pass_context=True)
-async def grind(ctx,level: int = 19):
+async def grind(ctx, level: int = 19):
   if level == 19:
     await bot.say('Go play {0}.'.format(grind19()))
+
+@bot.command(pass_context=True)
+async def jisho(ctx, *args):
+  if not args:
+    await bot.say('You cannot query nothing.')
+  else:
+    query = ' '.join(args)
+    output = search_jisho(query)
+    await bot.say(output)
 
 def _save():
   with open('amounts.json', 'w+') as f:
