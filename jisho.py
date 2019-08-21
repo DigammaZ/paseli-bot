@@ -19,7 +19,6 @@ def search_jisho(query):
 
 def create_output(data):
   output = []
-  data = [data[0]]
   for word_num, word in enumerate(data[:3]):
     word_arr = []
 
