@@ -1,13 +1,12 @@
 from discord.ext import commands
 from grind19 import grind19
 from jisho import search_jisho
-from discord_credentials import *
+from discordCredentials import *
 import discord
 import json
 
 bot = commands.Bot('!')
 
-DIGAMMA = '191639004221931525'
 amounts = {}
 
 @bot.event
