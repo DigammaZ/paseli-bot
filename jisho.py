@@ -20,7 +20,7 @@ def search_jisho(query):
 def create_output(data):
   output = []
   for word_num, word in enumerate(data[:3]):
-    word_arr, japanese_arr = [], []
+    word_arr, japanese_arr, japanese = [], [], word['japanese']
     for japanese_word in japanese:
       word_exists = 'word' in japanese_word and japanese_word['word']
       reading_exists = 'reading' in japanese_word and japanese_word['reading']
