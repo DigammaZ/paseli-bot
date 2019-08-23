@@ -45,9 +45,9 @@ async def register(ctx, user: discord.Member = None):
 
 
 @bot.command(pass_context=True)
-async def give(ctx, amount: int, otherUser: discord.Member):
+async def give(ctx, amount: int, other_user: discord.Member):
   primary_id = ctx.message.author.id
-  other_id = otherUser.id
+  other_id = other_user.id
   if amount < 0:
     await bot.say('Please do not steal Paseli.')
     return
@@ -66,7 +66,7 @@ async def give(ctx, amount: int, otherUser: discord.Member):
   else:
     amounts[primary_id] -= amount
     amounts[other_id] += amount
-    await bot.say('{0} has been given {1} WHOLE PASELI!'.format(otherUser.mention, amount))
+    await bot.say('{0} has been given {1} WHOLE PASELI!'.format(other_user.mention, amount))
     _save()
 
 @bot.command(pass_context=True)
