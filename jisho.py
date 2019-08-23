@@ -20,13 +20,14 @@ def search_jisho(query):
 def create_output(data):
   output = []
   for word_num, word in enumerate(data[:3]):
-    word_arr = []
-
-    japanese_arr = []
-    japanese = word['japanese']
+    word_arr, japanese_arr = [], []
     for japanese_word in japanese:
-      if'word' in japanese_word and japanese_word['word']:
+      word_exists = 'word' in japanese_word and japanese_word['word']
+      reading_exists = 'reading' in japanese_word and japanese_word['reading']
+      if word_exists and reading_exists:
         japanese_arr.append('{0} ({1})'.format(japanese_word['word'], japanese_word['reading']))
+      elif word_exists:
+        japanese_arr.append(japanese_word['word'])
       else:
         japanese_arr.append(japanese_word['reading'])
     word_arr.append(', '.join(japanese_arr))

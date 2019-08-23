@@ -2,8 +2,10 @@ from discord.ext import commands
 from grind19 import grind19
 from jisho import search_jisho
 from discordCredentials import *
+from remind import poll, attempt_create_remind
 import discord
 import json
+import re
 
 bot = commands.Bot('!')
 
@@ -18,6 +20,7 @@ async def on_ready():
   except FileNotFoundError:
     print('Could not load `amounts.json`.')
     amounts = {}
+  await poll(bot)
 
 @bot.command(pass_context=True)
 async def balance(ctx):
@@ -45,9 +48,9 @@ async def register(ctx, user: discord.Member = None):
 
 
 @bot.command(pass_context=True)
-async def give(ctx, amount: int, otherUser: discord.Member):
+async def give(ctx, amount: int, other_user: discord.Member):
   primary_id = ctx.message.author.id
-  other_id = otherUser.id
+  other_id = other_user.id
   if amount < 0:
     await bot.say('Please do not steal Paseli.')
     return
@@ -66,7 +69,7 @@ async def give(ctx, amount: int, otherUser: discord.Member):
   else:
     amounts[primary_id] -= amount
     amounts[other_id] += amount
-    await bot.say('{0} has been given {1} WHOLE PASELI!'.format(otherUser.mention, amount))
+    await bot.say('{0} has been given {1} WHOLE PASELI!'.format(other_user.mention, amount))
     _save()
 
 @bot.command(pass_context=True)
@@ -82,6 +85,18 @@ async def jisho(ctx, *args):
     query = ' '.join(args)
     output = search_jisho(query)
     await bot.say(output)
+
+@bot.command(pass_context=True)
+async def remind(ctx, *args):
+  regex = re.search('^[0-9]*[0-9]:[0-9][0-9] [AaPp][Mm] ', ' '.join(args))
+  if not regex:
+    await bot.say('Usage: `::remind <HH:MM> <AM/PM> <msg>`')
+  else:
+    try:
+      output = attempt_create_remind(ctx=ctx, hour_min=args[0], am_pm=args[1], msg=' '.join(args[2:]))
+      await bot.say(output)
+    except ValueError as e:
+      await bot.say(e)
 
 def _save():
   with open('amounts.json', 'w+') as f:
