@@ -104,6 +104,12 @@ async def no(ctx, *args):
   folder = os.path.dirname(os.path.realpath('__file__'))
   await bot.send_file(ctx.message.channel, os.path.join(folder, 'no.png'))
 
+@bot.event
+async def on_message(message):
+  if message.content.lower() == 'dying is unhealthy':
+    folder = os.path.dirname(os.path.realpath('__file__'))
+    await bot.send_file(message.channel, os.path.join(folder, 'no.png'))
+
 def _save():
   with open('amounts.json', 'w+') as f:
     json.dump(amounts, f)
