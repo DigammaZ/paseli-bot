@@ -6,6 +6,7 @@ from remind import poll, attempt_create_remind
 import discord
 import json
 import re
+import os
 
 bot = commands.Bot('!')
 
@@ -97,6 +98,11 @@ async def remind(ctx, *args):
       await bot.say(output)
     except ValueError as e:
       await bot.say(e)
+
+@bot.command(pass_context=True)
+async def no(ctx, *args):
+  folder = os.path.dirname(os.path.realpath('__file__'))
+  await bot.send_file(ctx.message.channel, os.path.join(folder, 'no.png'))
 
 def _save():
   with open('amounts.json', 'w+') as f:
