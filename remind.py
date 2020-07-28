@@ -8,19 +8,13 @@ pt = pytz.timezone('US/Pacific')
 REMIND_LIMIT = 10
 USER_GENERATED_DB = 'user_generated.db'
 
-async def poll(bot):
-  while(True):
-    now_timestamp = datetime.now().replace(second=0, microsecond=0).timestamp()
-    next_timestamp = now_timestamp + 60
-    await asyncio.sleep(next_timestamp - datetime.now().timestamp())
-    await send_reminds(bot, next_timestamp)
-
-async def send_reminds(bot, next_timestamp):
-  reminds = get_reminds(requested_time=next_timestamp)
+async def send_and_delete_reminds(bot):
+  timestamp = datetime.now().replace(second=0, microsecond=0).timestamp()
+  reminds = get_reminds(requested_time=timestamp)
   for remind in reminds:
-    channel = discord.Object(remind['channel_id'])
-    await bot.send_message(channel, '<@{0}> {1}'.format(remind['user_id'], remind['message']))
-  delete_old_reminds(requested_time=next_timestamp)
+    channel = discord.Client.get_channel(self=bot, id=remind['channel_id'])
+    await channel.send('<@{0}> {1}'.format(remind['user_id'], remind['message']))
+  delete_old_reminds(requested_time=timestamp)
 
 def get_reminds(requested_time=0, user_id='%%'):
   if requested_time:
