@@ -43,6 +43,7 @@ class Miscellaneous(commands.Cog):
 
   @commands.command()
   async def setplaying(self, ctx, *args):
+    await ctx.message.delete()
     if args and ctx.author.id == CELI_ID or DIGAMMA_ID:
       s = ' '.join(args)
       await discord.Client.change_presence(self=self.bot, activity=discord.Game(name=s))
