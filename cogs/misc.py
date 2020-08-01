@@ -43,7 +43,6 @@ class Miscellaneous(commands.Cog):
 
   @commands.command()
   async def setplaying(self, ctx, *args):
-    await ctx.message.delete()
     if args and ctx.author.id == CELI_ID or DIGAMMA_ID:
       s = ' '.join(args)
       await discord.Client.change_presence(self=self.bot, activity=discord.Game(name=s))
@@ -62,3 +61,10 @@ class Miscellaneous(commands.Cog):
       HELP_JAPAN_TITLE: HELP_JAPAN_VALUE,
       HELP_MISC_TITLE: HELP_MISC_VALUE
     }))
+
+  @commands.Cog.listener()
+  async def on_message(self, message):
+    if 'dying is unhealthy' in message.content.lower():
+      folder = os.path.dirname(os.path.realpath('__file__'))
+      channel = discord.Client.get_channel(self=self.bot, id=message.channel.id)
+      await channel.send(file=discord.File(os.path.join(folder, 'assets/no.png')))
