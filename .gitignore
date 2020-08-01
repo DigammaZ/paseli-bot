@@ -4,6 +4,7 @@
 
 discord_credentials.py
 discordCredentials.py
+constants.py
 
 #########
 # Cache #

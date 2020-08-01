@@ -1,9 +1,10 @@
 import requests
-url_endpoint = 'http://jisho.org/api/v1/search/words'
+
+URL_ENDPOINT = 'http://jisho.org/api/v1/search/words'
 
 def search_jisho(query):
   params = { 'keyword': query }
-  resp = requests.get(url_endpoint, params=params)
+  resp = requests.get(URL_ENDPOINT, params=params)
   try:
     resp.raise_for_status()
     data = resp.json()['data']
