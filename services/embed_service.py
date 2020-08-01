@@ -3,6 +3,8 @@ import random
 
 COLORS = [0xfd5e53, 0xeaebff, 0xe0fefe, 0xd3eeff, 0xffd6f3]
 
+from constants import PREFIX
+
 from services.time_service import get_time_from_epoch
 
 #########################
@@ -16,7 +18,7 @@ PASELI_URL = 'https://img.konami.com/amusement/paseli/img/index/charge_paseli_ic
 #############################
 
 def make_help_embed(commands):
-  embed = discord.Embed(title='Help', description='Available commands. Don\'t forget the prefix `!`.', color=random.choice(COLORS))
+  embed = discord.Embed(title='Help', description='Available commands. Don\'t forget the prefix `{0}`.'.format(PREFIX), color=random.choice(COLORS))
   embed.set_thumbnail(url=PASELI_URL)
   for key, value in commands.items():
     embed.add_field(name=key, value=value, inline=False)

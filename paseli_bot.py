@@ -3,6 +3,7 @@ from discord.ext.commands import Bot
 import logging
 
 from discord_credentials import TOKEN
+from constants import PREFIX
 
 from cogs.paseli import Paseli
 from cogs.japan import Japan
@@ -14,7 +15,7 @@ cogs = [Paseli, Japan, Sdvx, Remind, Miscellaneous]
 
 class PaseliBot(Bot):
   def __init__(self, *args, **kwargs):
-    super().__init__(command_prefix='!', description='Paseli Bot for 2MF.')
+    super().__init__(command_prefix=PREFIX, description='Paseli Bot for 2MF.')
 
     # Logging
     self.logger = logging.getLogger('discord')
