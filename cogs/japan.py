@@ -11,7 +11,7 @@ class Japan(commands.Cog):
     self.bot = bot
 
   @commands.command()
-  async def jisho(self, ctx):
+  async def jisho(self, ctx, *args):
     if not args:
       await ctx.send(JISHO_USAGE_MSG)
     else:

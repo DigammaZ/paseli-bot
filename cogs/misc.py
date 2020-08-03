@@ -19,7 +19,7 @@ HELP_SDVX_VALUE = ("```ini\n"
                    "```")
 
 
-HELP_JAPAN_TITLE = 'Miscellaneous'
+HELP_JAPAN_TITLE = 'Japan'
 HELP_JAPAN_VALUE = ("```ini\n"
                    "jisho [SEARCH TERM]\n"
                    "jst\n"
