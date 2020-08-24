@@ -10,10 +10,6 @@ from services.embed_service import make_remind_embed
 from services.remind_service import create_remind, send_and_delete_reminds
 from services.time_service import get_time_from_epoch
 
-REMIND_REGEX = '^[0-9]*[0-9]:[0-9][0-9] [AaPp][Mm] '
-REMIND_USAGE_MSG = '```::remind <HH:MM> <AM/PM> <msg>```'
-NO_REMINDS_MSG = 'You have no reminds.'
-
 class Remind(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
@@ -22,13 +18,20 @@ class Remind(commands.Cog):
     self.sched.add_job(func=send_and_delete_reminds, trigger='cron', args=[self.bot], max_instances=1, second=0)
     self.sched.start()
 
-  @commands.command()
-  async def remind(self, ctx, *args):
-    regex = re.search(REMIND_REGEX, ' '.join(args))
+  async def remind_check(ctx):
+    args = ' '.join(ctx.message.content.split()[1:])
+    regex = re.search('^[0-9]*[0-9]:[0-9][0-9] [AaPp][Mm] [\w]', args)
     if not regex:
-      await ctx.send(REMIND_USAGE_MSG)
-    else:
-      await ctx.send(create_remind(ctx, args[0], args[1], ' '.join(args[2:len(args)])))
+      raise commands.CommandError('Remind creation syntax is incorrect.')
+    return True
+
+  @commands.command(
+    description='Set a remind up to 24 hours in the future.',
+    usage='remind [HH:MM] [AM/PM] [MESSAGE]',
+    checks=[remind_check]
+  )
+  async def remind(self, ctx, *args):
+    await ctx.send(create_remind(ctx, args[0], args[1], ' '.join(args[2:len(args)])))
 
   async def process_remind_response(self, ctx, response):
     choice = response.content
@@ -46,11 +49,14 @@ class Remind(commands.Cog):
     await delete_choice.delete()
     await ctx.send('Remind with message `{0}` deleted.'.format(remind['message']))
 
-  @commands.command()
+  @commands.command(
+    description='Manage reminds.',
+    usage='show'
+  )
   async def show(self, ctx, *args):
     reminds = get_reminds(user_id=ctx.author.id, guild_id=ctx.guild.id)
     if not reminds:
-      await ctx.send(NO_REMINDS_MSG)
+      await ctx.send('You have no reminds.')
       return
     self.reminds[ctx.message.author.id] = reminds
     def remind_option_check(msg):
@@ -63,7 +69,7 @@ class Remind(commands.Cog):
       reminds = get_reminds(user_id=ctx.author.id, guild_id=ctx.guild.id)
       if not reminds:
         await embed.delete()
-        await ctx.send(NO_REMINDS_MSG)
+        await ctx.send('You have no reminds remaining.')
         return
       self.reminds[ctx.message.author.id] = reminds
       await embed.edit(embed=make_remind_embed(reminds))

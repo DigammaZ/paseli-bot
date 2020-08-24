@@ -41,4 +41,7 @@ class PaseliBot(Bot):
 
 if __name__ == '__main__':
   bot = PaseliBot()
+  @Bot.listen(name='on_command_error', self=bot)
+  async def on_command_error(ctx, error):
+    await ctx.send('{0}\nUsage: `{1}{2}`'.format(error, PREFIX, ctx.command.usage))
   bot.run(TOKEN)

@@ -6,61 +6,72 @@ from constants import CELI_ID, DIGAMMA_ID
 
 from services.embed_service import make_help_embed
 
-HELP_PASELI_TITLE = 'Paseli'
-HELP_PASELI_VALUE = ("```ini\n"
-                   "balance\n"
-                   "register\n"
-                   "give [AMOUNT] [RECIPIENT]\n"
-                   "```")
-
-HELP_SDVX_TITLE = 'SDVX'
-HELP_SDVX_VALUE = ("```ini\n"
-                   "grind\n"
-                   "```")
-
-
-HELP_JAPAN_TITLE = 'Japan'
-HELP_JAPAN_VALUE = ("```ini\n"
-                   "jisho [SEARCH TERM]\n"
-                   "jst\n"
-                   "```")
-
-HELP_REMIND_TITLE = 'Remind'
-HELP_REMIND_VALUE = ("```ini\n"
-                   "remind HH:MM [AM/PM] [MESSAGE]\n"
-                   "show\n"
-                   "```")
-
-HELP_MISC_TITLE = 'Miscellaneous'
-HELP_MISC_VALUE = ("```ini\n"
-                   "no\n"
-                   "```")
-
 class Miscellaneous(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
     self.bot.remove_command('help')
+    self.command_usage_dict = {}
+    self.command_description_dict = {}
 
-  @commands.command()
+  def init_command_description_dict(self):
+    if not self.command_description_dict:
+      for command in self.bot.commands:
+        self.command_description_dict[command.name] = command.description
+
+  def init_command_usage_dict(self):
+    if not self.command_usage_dict:
+      for command in self.bot.commands:
+        if command.cog.qualified_name not in self.command_usage_dict:
+          self.command_usage_dict[command.cog.qualified_name] = command.usage
+        else:
+          self.command_usage_dict[command.cog.qualified_name] += '\n{0}'.format(command.usage)
+      for cog_name, usage in self.command_usage_dict.items():
+        self.command_usage_dict[cog_name] = '```ini\n{0}\n```'.format(usage)
+
+  async def celi_digamma_check(ctx):
+    if ctx.author.id not in [CELI_ID, DIGAMMA_ID]:
+      raise commands.CommandError(message='You are not allowed to access this command.')
+    return True
+
+  async def set_playing_check(ctx):
+    args = ctx.message.content.split()[1:]
+    if not args:
+      raise commands.CommandError(message='Missing input to set as playing.')
+    return True
+
+  @commands.command(
+    description='Set the playing status of the bot.',
+    usage='setplaying [STRING]',
+    checks=[celi_digamma_check, set_playing_check]
+  )
   async def setplaying(self, ctx, *args):
-    if args and ctx.author.id == CELI_ID or DIGAMMA_ID:
-      s = ' '.join(args)
-      await discord.Client.change_presence(self=self.bot, activity=discord.Game(name=s))
+    s = ' '.join(args)
+    await discord.Client.change_presence(self=self.bot, activity=discord.Game(name=s))
 
-  @commands.command()
+  @commands.command(
+    description='Get the Velvet no... image.',
+    usage='no'
+  )
   async def no(self, ctx, *args):
     folder = os.path.dirname(os.path.realpath('__file__'))
     await ctx.send(file=discord.File(os.path.join(folder, 'assets/no.png')))
 
-  @commands.command()
+  @commands.command(
+    description='Get the help message with proper usage instructions.',
+    usage='help [optional COMMAND]'
+  )
   async def help(self, ctx, *args):
-    await ctx.send(embed=make_help_embed({
-      HELP_PASELI_TITLE: HELP_PASELI_VALUE,
-      HELP_SDVX_TITLE: HELP_SDVX_VALUE,
-      HELP_REMIND_TITLE: HELP_REMIND_VALUE,
-      HELP_JAPAN_TITLE: HELP_JAPAN_VALUE,
-      HELP_MISC_TITLE: HELP_MISC_VALUE
-    }))
+    if args:
+      self.init_command_description_dict()
+      query = ' '.join(args)
+      try:
+        description = self.command_description_dict[query]
+        await ctx.send(description)
+      except KeyError:
+        await ctx.send('There is no command called {0}.'.format(query))
+    else:
+      self.init_command_usage_dict()
+      await ctx.send(embed=make_help_embed(self.command_usage_dict))
 
   @commands.Cog.listener()
   async def on_message(self, message):

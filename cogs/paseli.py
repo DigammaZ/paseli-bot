@@ -2,17 +2,9 @@ import discord
 from discord.ext import commands
 import json
 from random import randint
+import re
 
 from constants import CELI_ID, DIGAMMA_ID
-
-NO_PASELI_ACCOUNT = 'You do not have a Paseli account.'
-USER_REGISTERED_SUCCESS = 'User is now registered in the Paseli Database!'
-USER_ALREADY_REGISTERED = 'User already has a Paseli account.'
-DO_NOT_STEAL_PASELI = 'Please do not steal Paseli.'
-TAX_FRAUD_SUCCESS = 'Tax fraud complete!'
-TAX_FRAUD_FAILURE = 'You are not allowed to commit tax fraud.'
-OTHER_PARTY_NO_PASELI_ACCOUNT = 'The other party does not have a Paseli account.'
-INSUFFICIENT_FUNDS = 'Insufficient Paseli, find a Recharge Kiosk.'
 
 class Paseli(commands.Cog):
   def __init__(self, bot):
@@ -28,7 +20,10 @@ class Paseli(commands.Cog):
     with open('amounts.json', 'w+') as f:
       json.dump(self.amounts, f)
 
-  @commands.command()
+  @commands.command(
+    description='Check your Paseli balance.',
+    usage='balance'
+  )
   async def balance(self, ctx):
     user_id = str(ctx.message.author.id)
     if user_id in self.amounts:
@@ -36,41 +31,55 @@ class Paseli(commands.Cog):
       divisor = randint(1, 10)
       await ctx.send('You have {0} WHOLE PASELI! That\'s, like, {1} x {2} Paseli!'.format(amount, round(amount/divisor, 2), divisor))
     else:
-      await ctx.send(NO_PASELI_ACCOUNT)
+      await ctx.send('You do not have a Paseli account.')
 
-  @commands.command()
+  @commands.command(
+    description='Register for a Paseli account.',
+    usage='register'
+  )
   async def register(self, ctx):
     user_id = str(ctx.message.author.id)
     if user_id not in self.amounts:
       self.amounts[user_id] = 100
-      await ctx.send(USER_REGISTERED_SUCCESS)
+      await ctx.send('User is now registered in the Paseli Database!')
       self.save()
     else:
-      await ctx.send(USER_ALREADY_REGISTERED)
+      await ctx.send('User already has a Paseli account.')
 
-  @commands.command()
+  async def give_check(ctx):
+    split = ctx.message.content.split()
+    try:
+      int(split[1])
+    except ValueError:
+      raise commands.CommandError('You must input an integer for the amount.')
+    regex = re.search('<@![0-9]+>', split[2])
+    if not regex:
+      raise commands.CommandError('You must @ another user.')
+    return True
+
+  @commands.command(
+    description='Give Paseli to another registered user.',
+    usage='give [AMOUNT] [@RECIPIENT]',
+    checks=[give_check]
+  )
   async def give(self, ctx, amount: int, other_user: discord.Member):
     primary_id = str(ctx.message.author.id)
     other_id = str(other_user.id)
     if amount < 0:
-      await ctx.send(DO_NOT_STEAL_PASELI)
-      return
-
-    if primary_id == other_id:
+      await ctx.send('Please do not steal Paseli.')
+    elif primary_id == other_id:
       if primary_id == str(CELI_ID) or primary_id == str(DIGAMMA_ID):
         self.amounts[primary_id] += amount
-        await ctx.send(TAX_FRAUD_SUCCESS)
+        await ctx.send('Tax fraud complete!')
         self.save()
       else:
-        await ctx.send(TAX_FRAUD_FAILURE)
-      return
-
-    if primary_id not in self.amounts:
-      await ctx.send(NO_PASELI_ACCOUNT)
+        await ctx.send('You are not allowed to commit tax fraud.')
+    elif primary_id not in self.amounts:
+      await ctx.send('You do not have a Paseli account.')
     elif other_id not in self.amounts:
-      await ctx.send(OTHER_PARTY_NO_PASELI_ACCOUNT)
+      await ctx.send('The other party does not have a Paseli account.')
     elif self.amounts[primary_id] < amount:
-      await ctx.send(INSUFFICIENT_FUNDS)
+      await ctx.send('Insufficient Paseli, find a Recharge Kiosk.')
     else:
       self.amounts[primary_id] -= amount
       self.amounts[other_id] += amount
