@@ -9,9 +9,10 @@ from cogs.paseli import Paseli
 from cogs.japan import Japan
 from cogs.sdvx import Sdvx
 from cogs.remind import Remind
+from cogs.roles import Roles
 from cogs.misc import Miscellaneous
 
-cogs = [Paseli, Japan, Sdvx, Remind, Miscellaneous]
+cogs = [Paseli, Japan, Sdvx, Remind, Roles, Miscellaneous]
 
 class PaseliBot(Bot):
   def __init__(self, *args, **kwargs):
