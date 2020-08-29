@@ -52,7 +52,7 @@ class Paseli(commands.Cog):
       int(split[1])
     except ValueError:
       raise commands.CommandError('You must input an integer for the amount.')
-    regex = re.search('<@![0-9]+>', split[2])
+    regex = re.search('<@!*[0-9]+>', split[2])
     if not regex:
       raise commands.CommandError('You must @ another user.')
     return True
