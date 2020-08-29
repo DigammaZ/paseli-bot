@@ -85,3 +85,32 @@ class Paseli(commands.Cog):
       self.amounts[other_id] += amount
       await ctx.send('{0} has been given {1} WHOLE PASELI!'.format(other_user.mention, amount))
       self.save()
+
+  @commands.command(
+    description='Take Paseli from another registered user. Only for Robbie.',
+    usage='take [AMOUNT] [@VICTIM]',
+    checks=[give_check]
+  )
+  async def take(self, ctx, amount: int, other_user: discord.Member):
+    primary_id = str(ctx.message.author.id)
+    other_id = str(other_user.id)
+    if primary_id != str(DIGAMMA_ID):
+      await ctx.send('You are not allowed to take Paseli.')
+    elif amount < 0:
+      await ctx.send('use the give command lmao')
+    elif primary_id == other_id:
+        await ctx.send('what no')
+    elif primary_id not in self.amounts:
+      await ctx.send('You do not have a Paseli account.')
+    elif other_id not in self.amounts:
+      await ctx.send('The other party does not have a Paseli account.')
+    else:
+      if amount > self.amounts[other_id]:
+        await ctx.send('{0} WHOLE PASELI has been stolen from {1}!'.format(self.amounts[other_id], other_user.mention))
+        self.amounts[primary_id] += self.amounts[other_id]
+        self.amounts[other_id] = 0
+      else:
+        await ctx.send('{0} WHOLE PASELI has been stolen from {1}!'.format(amount, other_user.mention))
+        self.amounts[primary_id] += amount
+        self.amounts[other_id] -= amount
+      self.save()
