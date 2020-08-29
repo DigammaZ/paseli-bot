@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import json
 from random import randint
 import re
@@ -9,6 +10,10 @@ from constants import CELI_ID, DIGAMMA_ID
 class Paseli(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
+    self.daily_done = set([])
+    self.sched = AsyncIOScheduler(daemon=True)
+    self.sched.add_job(func=self.reset_daily, trigger='cron', max_instances=1, hour=0)
+    self.sched.start()
     try:
       with open('amounts.json') as f:
         self.amounts = json.load(f)
@@ -19,6 +24,9 @@ class Paseli(commands.Cog):
   def save(self):
     with open('amounts.json', 'w+') as f:
       json.dump(self.amounts, f)
+
+  def reset_daily(self):
+    self.daily_done = set([])
 
   @commands.command(
     description='Check your Paseli balance.',
@@ -114,3 +122,19 @@ class Paseli(commands.Cog):
         self.amounts[primary_id] += amount
         self.amounts[other_id] -= amount
       self.save()
+
+  @commands.command(
+    description='Get 5 Paseli daily.',
+    usage='daily'
+  )
+  async def daily(self, ctx):
+    primary_id = str(ctx.message.author.id)
+    if primary_id not in self.amounts:
+      await ctx.send('You do not have a Paseli account.')
+    elif primary_id not in self.daily_done:
+      await ctx.send('You gained 5 WHOLE PASELI.')
+      self.amounts[primary_id] += 5
+      self.daily_done.add(primary_id)
+      self.save()
+    else:
+      await ctx.send('You\'ve already redeemed your daily Paseli.')
