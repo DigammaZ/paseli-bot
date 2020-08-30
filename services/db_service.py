@@ -46,3 +46,25 @@ def delete_old_reminds(requested_time=0, channel_id=None, user_id=None, message=
   c.execute('DELETE FROM remind WHERE requested_time <= ?', (requested_time,))
   conn.commit()
   conn.close()
+
+def insert_daily_done(discord_id):
+  conn = sqlite3.connect(USER_GENERATED_DB)
+  c = conn.cursor()
+  c.execute('INSERT INTO daily_done(discord_id) VALUES (?)', (discord_id,))
+  conn.commit()
+  conn.close()
+
+def select_daily_done(discord_id):
+  conn = sqlite3.connect(USER_GENERATED_DB)
+  c = conn.cursor()
+  c.execute('SELECT * FROM daily_done WHERE discord_id = ?', (discord_id,))
+  rows = c.fetchall()
+  conn.close()
+  return rows
+
+def delete_daily_done():
+  conn = sqlite3.connect(USER_GENERATED_DB)
+  c = conn.cursor()
+  c.execute('DELETE FROM daily_done')
+  conn.commit()
+  conn.close()

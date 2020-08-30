@@ -7,12 +7,15 @@ import re
 
 from constants import CELI_ID, DIGAMMA_ID
 
+from serializers.daily_done_serializer import get_daily_done
+
+from services.db_service import delete_daily_done, insert_daily_done
+
 class Paseli(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
-    self.daily_done = set([])
     self.sched = AsyncIOScheduler(daemon=True)
-    self.sched.add_job(func=self.reset_daily, trigger='cron', max_instances=1, hour=0)
+    self.sched.add_job(func=delete_daily_done, trigger='cron', max_instances=1, hour=0)
     self.sched.start()
     try:
       with open('amounts.json') as f:
@@ -24,9 +27,6 @@ class Paseli(commands.Cog):
   def save(self):
     with open('amounts.json', 'w+') as f:
       json.dump(self.amounts, f)
-
-  def reset_daily(self):
-    self.daily_done = set([])
 
   @commands.command(
     description='Check your Paseli balance.',
@@ -129,12 +129,13 @@ class Paseli(commands.Cog):
   )
   async def daily(self, ctx):
     primary_id = str(ctx.message.author.id)
+    daily_done_rows = get_daily_done(primary_id)
     if primary_id not in self.amounts:
       await ctx.send('You do not have a Paseli account.')
-    elif primary_id not in self.daily_done:
+    elif not daily_done_rows:
       await ctx.send('You gained 5 WHOLE PASELI.')
       self.amounts[primary_id] += 5
-      self.daily_done.add(primary_id)
+      insert_daily_done(primary_id)
       self.save()
     else:
       await ctx.send('You\'ve already redeemed your daily Paseli.')
