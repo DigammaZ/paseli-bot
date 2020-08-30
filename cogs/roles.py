@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from services.embed_service import make_location_role_embed
+
 class Roles(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
@@ -15,6 +17,10 @@ class Roles(commands.Cog):
       'SDVX Main'
     ])
     self.main_roles = {}
+    self.location_role_names = set([
+      'PHM', 'MPM', 'MVM', 'LWM', '池袋'
+    ])
+    self.location_roles = {}
 
   def cache_main_roles(self, guild):
     if guild.id not in self.main_roles:
@@ -27,6 +33,13 @@ class Roles(commands.Cog):
   def get_main_role(self, ctx):
     main_role = list(set(ctx.author.roles) & set(self.main_roles[ctx.guild.id]))
     return main_role[0] if main_role else None
+
+  def cache_location_roles(self, guild):
+    if guild.id not in self.location_roles:
+      self.location_roles[guild.id] = {}
+      for role in guild.roles:
+        if role.name in self.location_role_names:
+          self.location_roles[guild.id][role.name] = role
 
   @commands.command(
     description='Manage your main game role.',
@@ -56,3 +69,43 @@ class Roles(commands.Cog):
         await ctx.author.add_roles(desired_role)
         await ctx.send('Added main game role of **{0}**.'.format(desired_role))
       await response.delete()
+
+  @commands.command(
+    description='Manage your Round 1 location roles.',
+    usage='locationrole'
+  )
+  async def locationrole(self, ctx, *args):
+    self.cache_location_roles(ctx.guild)
+
+    def location_role_reaction_check(reaction, user):
+      return user == ctx.author
+
+    message = await ctx.send(embed=make_location_role_embed())
+    await message.add_reaction('🍚')
+    await message.add_reaction('🍘')
+    await message.add_reaction('🍙')
+    await message.add_reaction('🎑')
+    await message.add_reaction('🌾')
+
+    reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
+    while reaction:
+      if reaction.emoji == '🍚':
+        await self.add_or_remove_location_role(ctx, user, 'PHM')
+      elif reaction.emoji == '🍘':
+        await self.add_or_remove_location_role(ctx, user, 'MPM')
+      elif reaction.emoji == '🍙':
+        await self.add_or_remove_location_role(ctx, user, 'LWM')
+      elif reaction.emoji == '🎑':
+        await self.add_or_remove_location_role(ctx, user, 'MVM')
+      elif reaction.emoji == '🌾':
+        await self.add_or_remove_location_role(ctx, user, '池袋')
+      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
+
+  async def add_or_remove_location_role(self, ctx, user, location):
+    for role in user.roles:
+      if role.name == location:
+        await ctx.author.remove_roles(role)
+        await ctx.send('Role for {0} removed.'.format(location))
+        return
+    await ctx.author.add_roles(self.location_roles[ctx.guild.id][location])
+    await ctx.send('Role for {0} added.'.format(location))
