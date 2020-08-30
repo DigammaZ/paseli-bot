@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import os
 
-from constants import CELI_ID, DIGAMMA_ID
+from constants import CELI_ID, DIGAMMA_ID, PREFIX, WELCOME_CHANNEL_ID
 
 from services.embed_service import make_help_embed
 
@@ -79,3 +79,8 @@ class Miscellaneous(commands.Cog):
       folder = os.path.dirname(os.path.realpath('__file__'))
       channel = discord.Client.get_channel(self=self.bot, id=message.channel.id)
       await channel.send(file=discord.File(os.path.join(folder, 'assets/no.png')))
+
+  @commands.Cog.listener()
+  async def on_member_join(self, member):
+    channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
+    await channel.send("Welcome {0}!\nUse the command {1}gamerole to give yourself a role.".format(member.name, PREFIX))
