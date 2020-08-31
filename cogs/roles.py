@@ -89,7 +89,7 @@ class Roles(commands.Cog):
     await message.add_reaction('🌾')
 
     try:
-      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=1.0, check=location_role_reaction_check)
+      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
       while reaction:
         if reaction.emoji == '🍚':
           await self.add_or_remove_location_role(ctx, user, 'PHM')
