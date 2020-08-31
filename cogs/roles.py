@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import asyncio
 
 from services.embed_service import make_location_role_embed
 
@@ -87,19 +88,22 @@ class Roles(commands.Cog):
     await message.add_reaction('🎑')
     await message.add_reaction('🌾')
 
-    reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
-    while reaction:
-      if reaction.emoji == '🍚':
-        await self.add_or_remove_location_role(ctx, user, 'PHM')
-      elif reaction.emoji == '🍘':
-        await self.add_or_remove_location_role(ctx, user, 'MPM')
-      elif reaction.emoji == '🍙':
-        await self.add_or_remove_location_role(ctx, user, 'LWM')
-      elif reaction.emoji == '🎑':
-        await self.add_or_remove_location_role(ctx, user, 'MVM')
-      elif reaction.emoji == '🌾':
-        await self.add_or_remove_location_role(ctx, user, '池袋')
-      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
+    try:
+      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=1.0, check=location_role_reaction_check)
+      while reaction:
+        if reaction.emoji == '🍚':
+          await self.add_or_remove_location_role(ctx, user, 'PHM')
+        elif reaction.emoji == '🍘':
+          await self.add_or_remove_location_role(ctx, user, 'MPM')
+        elif reaction.emoji == '🍙':
+          await self.add_or_remove_location_role(ctx, user, 'LWM')
+        elif reaction.emoji == '🎑':
+          await self.add_or_remove_location_role(ctx, user, 'MVM')
+        elif reaction.emoji == '🌾':
+          await self.add_or_remove_location_role(ctx, user, '池袋')
+        reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
+    except asyncio.TimeoutError:
+      pass
 
   async def add_or_remove_location_role(self, ctx, user, location):
     for role in user.roles:
