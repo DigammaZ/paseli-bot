@@ -57,6 +57,14 @@ class Miscellaneous(commands.Cog):
     await ctx.send(file=discord.File(os.path.join(folder, 'assets/no.png')))
 
   @commands.command(
+    description='Say bye.',
+    usage='adios'
+  )
+  async def adios(self, ctx, *args):
+    folder = os.path.dirname(os.path.realpath('__file__'))
+    await ctx.send(file=discord.File(os.path.join(folder, 'assets/adios.png')))
+
+  @commands.command(
     description='Get the help message with proper usage instructions.',
     usage='help [optional COMMAND]'
   )
