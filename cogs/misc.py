@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import os
 
-from constants import CELI_ID, DIGAMMA_ID, PREFIX, WELCOME_CHANNEL_ID
+from constants import CELI_ID, DIGAMMA_ID, PREFIX, WELCOME_CHANNEL_ID, TWO_MF_GUILD_ID
 
 from services.embed_service import make_help_embed
 
@@ -90,5 +90,6 @@ class Miscellaneous(commands.Cog):
 
   @commands.Cog.listener()
   async def on_member_join(self, member):
-    channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
-    await channel.send("Welcome {0}!\nUse the commands {1}gamerole and {1}locationrole to give yourself roles.".format(member.name, PREFIX))
+    if member.guild.id == TWO_MF_GUILD_ID:
+      channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
+      await channel.send("Welcome {0}!\nUse the commands {1}gamerole and {1}locationrole to give yourself roles.".format(member.name, PREFIX))
