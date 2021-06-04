@@ -12,12 +12,7 @@ constants.py
 
 __pycache__
 *.db-journal
-
-#############
-# Log Files #
-#############
-
-discord.log
+.idea
 
 ########
 # JSON #
