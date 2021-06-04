@@ -6,6 +6,7 @@ from constants import CELI_ID, DIGAMMA_ID, PREFIX, WELCOME_CHANNEL_ID, TWO_MF_GU
 
 from services.embed_service import make_help_embed
 
+
 class Miscellaneous(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
@@ -52,7 +53,7 @@ class Miscellaneous(commands.Cog):
     description='Get the Velvet no... image.',
     usage='no'
   )
-  async def no(self, ctx, *args):
+  async def no(self, ctx):
     folder = os.path.dirname(os.path.realpath('__file__'))
     await ctx.send(file=discord.File(os.path.join(folder, 'assets/no.png')))
 
@@ -60,7 +61,7 @@ class Miscellaneous(commands.Cog):
     description='Say bye.',
     usage='adios'
   )
-  async def adios(self, ctx, *args):
+  async def adios(self, ctx):
     folder = os.path.dirname(os.path.realpath('__file__'))
     await ctx.send(file=discord.File(os.path.join(folder, 'assets/adios.png')))
 
@@ -92,4 +93,6 @@ class Miscellaneous(commands.Cog):
   async def on_member_join(self, member):
     if member.guild.id == TWO_MF_GUILD_ID:
       channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
-      await channel.send("Welcome {0}!\nUse the commands {1}gamerole and {1}locationrole to give yourself roles.".format(member.name, PREFIX))
+      await channel.send(
+        "Welcome {0}!\nUse the commands {1}gamerole and {1}locationrole to give yourself roles.".format(member.name,
+                                                                                                        PREFIX))

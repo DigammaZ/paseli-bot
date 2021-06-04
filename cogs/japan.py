@@ -1,8 +1,8 @@
-import discord
 from discord.ext import commands
 
 from services.jisho_service import search_jisho
 from services.time_service import get_current_japan_time
+
 
 class Japan(commands.Cog):
   def __init__(self, bot):

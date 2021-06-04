@@ -1,5 +1,6 @@
 from services.db_service import select_reminds, show_reminds
 
+
 def get_reminds(requested_time=0, user_id='%%', guild_id='%%'):
   if requested_time:
     rows = select_reminds(requested_time=requested_time, user_id=user_id)

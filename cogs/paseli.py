@@ -11,6 +11,7 @@ from serializers.daily_done_serializer import get_daily_done
 
 from services.db_service import delete_daily_done, insert_daily_done
 
+
 class Paseli(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
@@ -37,7 +38,9 @@ class Paseli(commands.Cog):
     if user_id in self.amounts:
       amount = self.amounts[user_id]
       divisor = randint(1, 10)
-      await ctx.send('You have {0} WHOLE PASELI! That\'s, like, {1} x {2} Paseli!'.format(amount, round(amount/divisor, 2), divisor))
+      await ctx.send(
+        'You have {0} WHOLE PASELI! That\'s, like, {1} x {2} Paseli!'.format(amount, round(amount / divisor, 2),
+                                                                             divisor))
     else:
       await ctx.send('You do not have a Paseli account.')
 
@@ -107,7 +110,7 @@ class Paseli(commands.Cog):
     elif amount < 0:
       await ctx.send('use the give command lmao')
     elif primary_id == other_id:
-        await ctx.send('what no')
+      await ctx.send('what no')
     elif primary_id not in self.amounts:
       await ctx.send('You do not have a Paseli account.')
     elif other_id not in self.amounts:

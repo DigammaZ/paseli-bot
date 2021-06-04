@@ -8,6 +8,7 @@ from services.time_service import get_nearest_datetime
 
 REMIND_LIMIT = 10
 
+
 # returns message to show in discord
 def create_remind(ctx, time, ampm, message):
   try:
@@ -19,8 +20,10 @@ def create_remind(ctx, time, ampm, message):
   if count >= REMIND_LIMIT:
     return 'You already have {0} reminds.'.format(REMIND_LIMIT)
   else:
-    insert_remind(requested_time=requested_time, channel_id=ctx.channel.id, user_id=ctx.author.id, message=message, guild_id=ctx.guild.id)
+    insert_remind(requested_time=requested_time, channel_id=ctx.channel.id, user_id=ctx.author.id, message=message,
+                  guild_id=ctx.guild.id)
     return 'You have {0} reminds remaining. Reminding at {1} {2}.'.format(REMIND_LIMIT - count - 1, time, ampm)
+
 
 async def send_and_delete_reminds(bot):
   timestamp = datetime.now().replace(second=0, microsecond=0).timestamp()

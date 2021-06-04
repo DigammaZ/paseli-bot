@@ -2,8 +2,9 @@ import requests
 
 URL_ENDPOINT = 'http://jisho.org/api/v1/search/words'
 
+
 def search_jisho(query):
-  params = { 'keyword': query }
+  params = {'keyword': query}
   resp = requests.get(URL_ENDPOINT, params=params)
   try:
     resp.raise_for_status()
@@ -17,6 +18,7 @@ def search_jisho(query):
       return 'Jisho appears to be down.'
     else:
       return 'Random ass error: {0}.'.format(resp.status_code)
+
 
 def create_output(data):
   output = []
@@ -33,7 +35,7 @@ def create_output(data):
         japanese_arr.append(japanese_word['reading'])
     word_arr.append(', '.join(japanese_arr))
     senses = word['senses']
-      
+
     parts_of_speech = senses[0]['parts_of_speech']
     word_arr.append('_{0}_'.format(', '.join(parts_of_speech)))
     for sense_num, sense in enumerate(senses):

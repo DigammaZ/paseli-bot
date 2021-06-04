@@ -4,23 +4,14 @@ import asyncio
 
 from services.embed_service import make_location_role_embed
 
+
 class Roles(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
-    self.main_role_names = set([
-      'Dance Rush Main',
-      'DDR Main',
-      'Gitadora Main',
-      'Groove Coaster Main',
-      'IIDX Main',
-      'Pop\'n Main',
-      'Pump Main',
-      'SDVX Main'
-    ])
+    self.main_role_names = {'Dance Rush Main', 'DDR Main', 'Gitadora Main', 'Groove Coaster Main', 'IIDX Main',
+                            'Pop\'n Main', 'Pump Main', 'SDVX Main'}
     self.main_roles = {}
-    self.location_role_names = set([
-      'PHM', 'MPM', 'MVM', 'LWM', '池袋'
-    ])
+    self.location_role_names = {'PHM', 'MPM', 'MVM', 'LWM', '池袋'}
     self.location_roles = {}
 
   def cache_main_roles(self, guild):
@@ -29,7 +20,7 @@ class Roles(commands.Cog):
       for role in guild.roles:
         if role.name in self.main_role_names:
           self.main_roles[guild.id].append(role)
-        self.main_roles[guild.id].sort(key=lambda role: role.name)
+        self.main_roles[guild.id].sort(key=lambda r: r.name)
 
   def get_main_role(self, ctx):
     main_role = list(set(ctx.author.roles) & set(self.main_roles[ctx.guild.id]))
@@ -46,25 +37,29 @@ class Roles(commands.Cog):
     description='Manage your main game role.',
     usage='gamerole'
   )
-  async def gamerole(self, ctx, *args):
+  async def gamerole(self, ctx):
     self.cache_main_roles(ctx.guild)
     current_main_role = self.get_main_role(ctx)
 
     def main_role_option_check(msg):
-      return msg.author == ctx.author and msg.channel == ctx.channel and int(msg.content) in list(range(len(self.main_roles[ctx.guild.id]) + 1))
+      return msg.author == ctx.author and msg.channel == ctx.channel and int(msg.content) in list(
+        range(len(self.main_roles[ctx.guild.id]) + 1))
 
     if current_main_role:
-      await ctx.send('Your current main game role: **{0}**.\nEnter 0 to delete your main game role.\nEnter one of the numbers to change your main game role.'.format(current_main_role))
+      await ctx.send(
+        'Your current main game role: **{0}**.\nEnter 0 to delete your main game role.\nEnter one of the numbers to '
+        'change your main game role.'.format(
+          current_main_role))
     else:
       await ctx.send('You currently do not have a main game role.\nEnter one of the numbers to add a main game role.')
-    await ctx.send('\n'.join(['**{0}**: {1}'.format(i+1, v) for i, v in enumerate(self.main_roles[ctx.guild.id])]))
-    
+    await ctx.send('\n'.join(['**{0}**: {1}'.format(i + 1, v) for i, v in enumerate(self.main_roles[ctx.guild.id])]))
+
     response = await discord.Client.wait_for(self=self.bot, event='message', timeout=30, check=main_role_option_check)
     if response:
       if current_main_role:
         await ctx.author.remove_roles(current_main_role)
         await ctx.send('Deleted current main game role of **{0}**.'.format(current_main_role))
-      choice = int(response.content)-1
+      choice = int(response.content) - 1
       if choice != -1:
         desired_role = self.main_roles[ctx.guild.id][choice]
         await ctx.author.add_roles(desired_role)
@@ -75,7 +70,7 @@ class Roles(commands.Cog):
     description='Manage your Round 1 location roles.',
     usage='locationrole'
   )
-  async def locationrole(self, ctx, *args):
+  async def locationrole(self, ctx):
     self.cache_location_roles(ctx.guild)
 
     def location_role_reaction_check(reaction, user):
@@ -89,7 +84,8 @@ class Roles(commands.Cog):
     await message.add_reaction('🌾')
 
     try:
-      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
+      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0,
+                                                     check=location_role_reaction_check)
       while reaction:
         if reaction.emoji == '🍚':
           await self.add_or_remove_location_role(ctx, user, 'PHM')
@@ -101,7 +97,8 @@ class Roles(commands.Cog):
           await self.add_or_remove_location_role(ctx, user, 'MVM')
         elif reaction.emoji == '🌾':
           await self.add_or_remove_location_role(ctx, user, '池袋')
-        reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0, check=location_role_reaction_check)
+        reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0,
+                                                       check=location_role_reaction_check)
     except asyncio.TimeoutError:
       pass
 

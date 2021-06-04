@@ -5,10 +5,10 @@ import re
 
 from serializers.remind_serializer import get_reminds
 
-from services.db_service import delete_remind, delete_old_reminds
+from services.db_service import delete_remind
 from services.embed_service import make_remind_embed
 from services.remind_service import create_remind, send_and_delete_reminds
-from services.time_service import get_time_from_epoch
+
 
 class Remind(commands.Cog):
   def __init__(self, bot):
@@ -41,10 +41,12 @@ class Remind(commands.Cog):
   async def process_delete(self, ctx):
     def delete_remind_check(msg):
       return msg.channel == ctx.channel and msg.author == ctx.author and msg.content.isdigit()
+
     delete_message = await ctx.send('Choose the number of the remind you want to delete.')
     delete_choice = await discord.Client.wait_for(self=self.bot, event='message', timeout=10, check=delete_remind_check)
-    remind = self.reminds[ctx.message.author.id][int(delete_choice.content)-1]
-    delete_remind(remind['requested_time'], remind['channel_id'], remind['user_id'], remind['message'], remind['guild_id'])
+    remind = self.reminds[ctx.message.author.id][int(delete_choice.content) - 1]
+    delete_remind(remind['requested_time'], remind['channel_id'], remind['user_id'], remind['message'],
+                  remind['guild_id'])
     await delete_message.delete()
     await delete_choice.delete()
     await ctx.send('Remind with message `{0}` deleted.'.format(remind['message']))
@@ -53,14 +55,16 @@ class Remind(commands.Cog):
     description='Manage reminds.',
     usage='show'
   )
-  async def show(self, ctx, *args):
+  async def show(self, ctx):
     reminds = get_reminds(user_id=ctx.author.id, guild_id=ctx.guild.id)
     if not reminds:
       await ctx.send('You have no reminds.')
       return
     self.reminds[ctx.message.author.id] = reminds
+
     def remind_option_check(msg):
       return msg.author == ctx.author and msg.channel == ctx.channel and msg.content in ['0', '1']
+
     embed = await ctx.send(embed=make_remind_embed(reminds))
     response = await discord.Client.wait_for(self=self.bot, event='message', timeout=30, check=remind_option_check)
     while response:

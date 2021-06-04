@@ -1,7 +1,7 @@
-import discord
 from discord.ext import commands
 
 from services.sdvx_service import grind19
+
 
 class Sdvx(commands.Cog):
   def __init__(self, bot):
