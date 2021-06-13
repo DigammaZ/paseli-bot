@@ -2,16 +2,20 @@ import discord
 from discord.ext import commands
 import asyncio
 
-from services.embed_service import make_location_role_embed
+from constants import ROLES_CHANNEL_ID
+
+from models.locations import LOCATIONS
+from models.rhythm_games import RHYTHM_GAMES
+
+from services.embed_service import make_location_role_embed, make_main_role_embed
 
 
 class Roles(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
-    self.main_role_names = {'Dance Rush Main', 'DDR Main', 'Gitadora Main', 'Groove Coaster Main', 'IIDX Main',
-                            'Pop\'n Main', 'Pump Main', 'SDVX Main'}
+    self.main_role_names = map(lambda x: x.role_name, RHYTHM_GAMES)
     self.main_roles = {}
-    self.location_role_names = {'PHM', 'MPM', 'MVM', 'LWM', '池袋'}
+    self.location_role_names = map(lambda x: x.role_name, LOCATIONS)
     self.location_roles = {}
 
   def cache_main_roles(self, guild):
@@ -32,6 +36,33 @@ class Roles(commands.Cog):
       for role in guild.roles:
         if role.name in self.location_role_names:
           self.location_roles[guild.id][role.name] = role
+
+  @commands.command(
+    description='Initialize role embed messages.',
+    usage='initrolesembed'
+  )
+  async def initrolesembed(self, ctx):
+    location_roles_msg = await ctx.send(make_location_role_embed())
+    main_roles_msg = await ctx.send(make_main_role_embed())
+
+    for emote in list(map(lambda x: x.emote, LOCATIONS)):
+      await location_roles_msg.add_reaction(emote)
+
+    for emote in list(map(lambda x: x.emote, RHYTHM_GAMES)):
+      await main_roles_msg.add_reaction(emote)
+
+    await ctx.message.delete()
+
+  @commands.Cog.listener()
+  async def on_raw_reaction_add(self, payload):
+    await self.handle_react(payload)
+
+  @commands.Cog.listener()
+  async def on_raw_reaction_remove(self, payload):
+    await self.handle_react(payload)
+
+  async def handle_react(self, payload):
+    return
 
   @commands.command(
     description='Manage your main game role.',

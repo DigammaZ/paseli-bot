@@ -3,6 +3,9 @@ import random
 
 from constants import PREFIX
 
+from models.locations import LOCATIONS
+from models.rhythm_games import RHYTHM_GAMES
+
 from services.time_service import get_time_from_epoch
 
 COLORS = [0xfd5e53, 0xeaebff, 0xe0fefe, 0xd3eeff, 0xffd6f3]
@@ -51,13 +54,20 @@ ROUND_1_LOGO_URL = 'https://static.wixstatic.com/media/83891d_a7f0ffee16ed41aea5
 #############################
 
 def make_location_role_embed():
-  embed = discord.Embed(title='Round 1 Location Roles', description='React to add or remove a role.',
+  embed = discord.Embed(title='Round 1 Location Roles', description='React to add or remove a role. You may have '
+                                                                    'multiple.',
                         color=random.choice(COLORS))
   embed.set_thumbnail(url=ROUND_1_LOGO_URL)
-  embed.add_field(name=':rice: PHM', value='Puente Hills Mall', inline=False)
-  embed.add_field(name=':rice_cracker: MPM', value='Main Place Mall', inline=False)
-  embed.add_field(name=':rice_ball: LWM', value='Lakewood Mall', inline=False)
-  embed.add_field(name=':rice_scene: MVM', value='Moreno Valley Mall', inline=False)
-  embed.add_field(name=':ear_of_rice: 池袋', value='Ikebukuro, Tokyo, Japan', inline=False)
-  embed.add_field(name='Not Listed', value='Sucks 2 suck jk ask someone to add your main arcade', inline=False)
+  for location in LOCATIONS:
+    embed.add_field(name='{0} {1}'.format(location.emote, location.role_name), value=location.full_name, inline=False)
+  return embed
+
+
+def make_main_role_embed():
+  embed = discord.Embed(title='Main Rhythm Game Roles', description='React to add or remove a role. You may only have '
+                                                                    'one.',
+                        color=random.choice(COLORS))
+  embed.set_thumbnail(url=random.choice(list(map(lambda x: x.logo_url, RHYTHM_GAMES))))
+  for game in RHYTHM_GAMES:
+    embed.add_field(name='{0} {1}'.format(game.emote, game.role_name), value=game.name, inline=False)
   return embed
