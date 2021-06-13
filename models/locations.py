@@ -6,19 +6,19 @@ class Location:
 
 
 PHM = Location(full_name='Puente Hills Mall',
-               emote=':rice:',
+               emote='🍚',
                role_name='PHM')
 MPM = Location(full_name='Main Place Mall',
-               emote=':rice_cracker:',
+               emote='🍘',
                role_name='MPM')
 LWM = Location(full_name='Lakewood Mall',
-               emote=':rice_ball:',
+               emote='🍙',
                role_name='LWM')
 MVM = Location(full_name='Moreno Valley Mall',
-               emote=':rice_scene:',
+               emote='🎑',
                role_name='MVM')
 IKE = Location(full_name='Ikebukuro, Tokyo, Japan',
-               emote=':ear_of_rice:',
+               emote='🌾',
                role_name='池袋')
 
 LOCATIONS = {PHM, MPM, LWM, MVM, IKE}

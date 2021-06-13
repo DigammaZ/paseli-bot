@@ -35,7 +35,7 @@ PUMP = RhythmGame(logo_url='https://www.bmigaming.com/Games/Pictures/video-arcad
                   name='Pump It Up',
                   role_name='Pump Main')
 SDVX = RhythmGame(logo_url='https://remywiki.com/images/9/99/SDVX_EXCEED_GEAR.png',
-                  emote='<:tama:428463105895563274',
+                  emote='<:tama:428463105895563274>',
                   name='Sound Voltex',
                   role_name='SDVX Main')
 RHYTHM_GAMES = {DANCERUSH, DDR, GITADORA, GROOVE_COASTER, IIDX, POPN, PUMP, SDVX}
