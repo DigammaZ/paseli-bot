@@ -21,4 +21,4 @@ IKE = Location(full_name='Ikebukuro, Tokyo, Japan',
                emote='🌾',
                role_name='池袋')
 
-LOCATIONS = {PHM, MPM, LWM, MVM, IKE}
+LOCATIONS = [PHM, MPM, LWM, MVM, IKE]

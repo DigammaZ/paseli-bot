@@ -38,4 +38,4 @@ SDVX = RhythmGame(logo_url='https://remywiki.com/images/9/99/SDVX_EXCEED_GEAR.pn
                   emote='<:tama:428463105895563274>',
                   name='Sound Voltex',
                   role_name='SDVX Main')
-RHYTHM_GAMES = {DANCERUSH, DDR, GITADORA, GROOVE_COASTER, IIDX, POPN, PUMP, SDVX}
+RHYTHM_GAMES = [DANCERUSH, DDR, GITADORA, GROOVE_COASTER, IIDX, POPN, PUMP, SDVX]
