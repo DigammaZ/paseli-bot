@@ -42,8 +42,8 @@ class Roles(commands.Cog):
     usage='initrolesembed'
   )
   async def initrolesembed(self, ctx):
-    location_roles_msg = await ctx.send(make_location_role_embed())
-    main_roles_msg = await ctx.send(make_main_role_embed())
+    location_roles_msg = await ctx.send(embed=make_location_role_embed())
+    main_roles_msg = await ctx.send(embed=make_main_role_embed())
 
     for emote in list(map(lambda x: x.emote, LOCATIONS)):
       await location_roles_msg.add_reaction(emote)
