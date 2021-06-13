@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 
-from constants import ROLES_CHANNEL_ID
+from constants import ROLES_CHANNEL_ID, LOCATION_ROLES_MSG_ID, MAIN_ROLES_MSG_ID
 
 from models.locations import LOCATIONS
 from models.rhythm_games import RHYTHM_GAMES
@@ -62,7 +62,13 @@ class Roles(commands.Cog):
     await self.handle_react(payload)
 
   async def handle_react(self, payload):
-    return
+    channel = self.bot.get_channel(ROLES_CHANNEL_ID)
+    if payload.message_id == LOCATION_ROLES_MSG_ID:
+      return
+    elif payload.message_id == MAIN_ROLES_MSG_ID:
+      message = await channel.send(payload.emoji.name)
+      await asyncio.sleep(10)
+      await message.delete()
 
   @commands.command(
     description='Manage your main game role.',
