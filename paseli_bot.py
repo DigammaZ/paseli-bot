@@ -1,5 +1,7 @@
 import discord
 from discord.ext.commands import Bot
+intents = discord.Intents.default()
+intents.members = True
 
 from discord_credentials import TOKEN
 from constants import PREFIX
@@ -16,7 +18,7 @@ cogs = [Paseli, Japan, Sdvx, Remind, Roles, Miscellaneous]
 
 class PaseliBot(Bot):
   def __init__(self):
-    super().__init__(command_prefix=PREFIX, description='Paseli Bot for 2MF.')
+    super().__init__(command_prefix=PREFIX, description='Paseli Bot for 2MF.', intents=intents)
 
   async def on_ready(self):
     print('Logged in as {0.user.name}'.format(self))
