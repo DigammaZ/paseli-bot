@@ -66,6 +66,16 @@ class Miscellaneous(commands.Cog):
     await ctx.send(file=discord.File(os.path.join(folder, 'assets/adios.png')))
 
   @commands.command(
+    description='Admin utility command to delete Paseli Bot messages.',
+    usage='delete_msg [MSG_ID_1, ..., MSG_ID_n]',
+    checks=[celi_digamma_check]
+  )
+  async def delete_msg(self, ctx, *args):
+    for msg_id in args:
+      msg = ctx.channel.fetch_message(msg_id)
+      await msg.delete()
+
+  @commands.command(
     description='Get the help message with proper usage instructions.',
     usage='help [optional COMMAND]'
   )
