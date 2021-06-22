@@ -74,6 +74,7 @@ class Miscellaneous(commands.Cog):
     for msg_id in args:
       msg = await ctx.channel.fetch_message(msg_id)
       await msg.delete()
+    await ctx.message.delete()
 
   @commands.command(
     description='Get the help message with proper usage instructions.',
