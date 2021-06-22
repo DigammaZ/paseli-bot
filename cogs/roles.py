@@ -139,7 +139,7 @@ class Roles(commands.Cog):
       pass
 
   async def add_or_remove_location_role(self, channel, payload, location):
-    member = self.guild.get_member(id=payload.user_id)
+    member = self.guild.get_member(user_id=payload.user_id)
     for role in member.roles:
       if role.name == location:
         await member.remove_roles(role)
