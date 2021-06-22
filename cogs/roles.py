@@ -106,11 +106,11 @@ class Roles(commands.Cog):
     for role in member.roles:
       if role.name == location:
         await member.remove_roles(role)
-        msg = await channel.send('{0} role for @{1} removed.'.format(location, member))
+        msg = await channel.send('{0} role for <@{1}> removed.'.format(location, payload.user_id))
         await asyncio.sleep(5)
         await msg.delete()
         return
     await member.add_roles(self.location_roles[location])
-    msg = await channel.send('{0} role for @{1} added.'.format(location, member))
+    msg = await channel.send('{0} role for <@{1}> added.'.format(location, payload.user_id))
     await asyncio.sleep(5)
     await msg.delete()
