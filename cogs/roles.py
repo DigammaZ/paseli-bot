@@ -55,27 +55,26 @@ class Roles(commands.Cog):
   async def handle_react(self, payload):
     self.cache_roles()
     channel = self.bot.get_channel(ROLES_CHANNEL_ID)
+    member = self.guild.get_member(user_id=payload.user_id)
     if payload.message_id == LOCATION_ROLES_MSG_ID:
       matches = list(filter(lambda x: x.emote == payload.emoji.name, LOCATIONS))
       if matches:
-        await self.add_or_remove_location_role(channel, payload, matches[0].role_name)
+        await self.add_or_remove_location_role(channel, member, matches[0].role_name)
 
     elif payload.message_id == MAIN_ROLES_MSG_ID:
       matches = list(filter(lambda x: x.emote_id == payload.emoji.id, RHYTHM_GAMES))
       if matches:
-        await self.add_or_remove_game_role(channel, payload, matches[0].role_name)
+        await self.add_or_remove_game_role(channel, member, matches[0].role_name)
 
   def get_main_role(self, member):
     main_role = list(set(member.roles) & set(self.main_roles.values()))
     return main_role[0] if main_role else None
 
-
-  async def add_or_remove_game_role(self, channel, payload, game):
-    member = self.guild.get_member(user_id=payload.user_id)
+  async def add_or_remove_game_role(self, channel, member, game):
     for role in member.roles:
       if role.name == game:
         await member.remove_roles(role)
-        msg = await channel.send('{0} role removed for <@{1}>.'.format(game, payload.user_id))
+        msg = await channel.send('{0} role removed for <@{1}>.'.format(game, member.id))
         await asyncio.sleep(5)
         await msg.delete()
         return
@@ -84,23 +83,22 @@ class Roles(commands.Cog):
     if current_main_role:
       await member.remove_roles(current_main_role)
       await member.add_roles(self.main_roles[game])
-      msg = await channel.send('{0} role replaced with {1} role for <@{2}>.'.format(current_main_role.name, game, payload.user_id))
+      msg = await channel.send('{0} role replaced with {1} role for <@{2}>.'.format(current_main_role.name, game, member.id))
     else:
       await member.add_roles(self.main_roles[game])
-      msg = await channel.send('{0} role added for <@{1}>.'.format(game, payload.user_id))
+      msg = await channel.send('{0} role added for <@{1}>.'.format(game, member.id))
     await asyncio.sleep(5)
     await msg.delete()
 
-  async def add_or_remove_location_role(self, channel, payload, location):
-    member = self.guild.get_member(user_id=payload.user_id)
+  async def add_or_remove_location_role(self, channel, member, location):
     for role in member.roles:
       if role.name == location:
         await member.remove_roles(role)
-        msg = await channel.send('{0} role removed for <@{1}>.'.format(location, payload.user_id))
+        msg = await channel.send('{0} role removed for <@{1}>.'.format(location, member.id))
         await asyncio.sleep(5)
         await msg.delete()
         return
     await member.add_roles(self.location_roles[location])
-    msg = await channel.send('{0} role added for <@{1}>.'.format(location, payload.user_id))
+    msg = await channel.send('{0} role added for <@{1}>.'.format(location, member.id))
     await asyncio.sleep(5)
     await msg.delete()
