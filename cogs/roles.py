@@ -14,9 +14,9 @@ class Roles(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
     self.main_role_names = map(lambda x: x.role_name, RHYTHM_GAMES)
-    self.main_roles = []
+    self.main_roles = {}
     self.location_role_names = map(lambda x: x.role_name, LOCATIONS)
-    self.location_roles = []
+    self.location_roles = {}
     self.guild = None
 
   def cache_roles(self):
@@ -24,11 +24,9 @@ class Roles(commands.Cog):
       self.guild = discord.Client.get_guild(self=self.bot, id=TWO_MF_GUILD_ID)
       for role in self.guild.roles:
         if role.name in self.main_role_names:
-          self.main_roles.append(role)
+          self.main_roles[role.name] = role
         if role.name in self.location_role_names:
-          self.location_roles.append(role)
-      self.main_roles.sort(key=lambda r: r.name)
-      self.location_roles.sort(key=lambda r: r.name)
+          self.location_roles[role.name] = role
 
   def get_main_role(self, ctx):
     main_role = list(set(ctx.author.roles) & set(self.main_roles[ctx.guild.id]))
@@ -143,10 +141,11 @@ class Roles(commands.Cog):
     for role in member.roles:
       if role.name == location:
         await member.remove_roles(role)
-        msg_input = 'removed'
-      else:
-        await member.add_roles(location)
-        msg_input = 'added'
-      msg = await channel.send('Role for {0} {1}.'.format(location, msg_input))
-      await asyncio.sleep(5)
-      await msg.delete()
+        msg = await channel.send('Role for {0} removed.'.format(location))
+        await asyncio.sleep(5)
+        await msg.delete()
+        return
+    await member.add_roles(self.location_roles[location])
+    msg = await channel.send('Role for {0} added.'.format(location))
+    await asyncio.sleep(5)
+    await msg.delete()
