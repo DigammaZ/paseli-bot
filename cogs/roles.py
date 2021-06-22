@@ -17,9 +17,9 @@ class Roles(commands.Cog):
     self.main_roles = []
     self.location_role_names = map(lambda x: x.role_name, LOCATIONS)
     self.location_roles = []
-    self.cache_roles(discord.Client.get_guild(id=TWO_MF_GUILD_ID))
 
-  def cache_roles(self, guild):
+  def cache_roles(self):
+    guild = discord.Client.get_guild(self=self.bot, id=TWO_MF_GUILD_ID)
     for role in guild.roles:
       if role.name in self.main_role_names:
         self.main_roles.append(role)
