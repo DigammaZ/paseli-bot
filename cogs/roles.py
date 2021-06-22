@@ -138,10 +138,14 @@ class Roles(commands.Cog):
       pass
 
   async def add_or_remove_location_role(self, channel, payload, location):
-    for role in payload.user.roles:
+    user = discord.Client.get_user(self=self.bot, id=payload.user_id)
+    for role in user.roles:
       if role.name == location:
         await user.remove_roles(role)
-        await channel.send('Role for {0} removed.'.format(location))
+        msg_input = 'removed'
       else:
         await user.add_roles(self.location_roles[location])
-        await channel.send('Role for {0} added.'.format(location))
+        msg_input = 'added'
+      msg = await channel.send('Role for {0} {1}.'.format(location, msg_input))
+      await asyncio.sleep(5)
+      await msg.delete()
