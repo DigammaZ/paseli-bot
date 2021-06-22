@@ -67,12 +67,12 @@ class Miscellaneous(commands.Cog):
 
   @commands.command(
     description='Admin utility command to delete Paseli Bot messages.',
-    usage='delete_msg [MSG_ID_1, ..., MSG_ID_n]',
+    usage='deletemsg [MSG_ID_1, ..., MSG_ID_n]',
     checks=[celi_digamma_check]
   )
-  async def delete_msg(self, ctx, *args):
+  async def deletemsg(self, ctx, *args):
     for msg_id in args:
-      msg = ctx.channel.fetch_message(msg_id)
+      msg = await ctx.channel.fetch_message(msg_id)
       await msg.delete()
 
   @commands.command(
