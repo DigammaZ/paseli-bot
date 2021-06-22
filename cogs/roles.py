@@ -19,14 +19,15 @@ class Roles(commands.Cog):
     self.location_roles = []
 
   def cache_roles(self):
-    guild = discord.Client.get_guild(self=self.bot, id=TWO_MF_GUILD_ID)
-    for role in guild.roles:
-      if role.name in self.main_role_names:
-        self.main_roles.append(role)
-      if role.name in self.location_role_names:
-        self.location_roles[guild.id][role.name] = role
-    self.main_roles.sort(key=lambda r: r.name)
-    self.location_roles.sort(key=lambda r: r.name)
+    if not self.main_roles and not self.location_roles:
+      guild = discord.Client.get_guild(self=self.bot, id=TWO_MF_GUILD_ID)
+      for role in guild.roles:
+        if role.name in self.main_role_names:
+          self.main_roles.append(role)
+        if role.name in self.location_role_names:
+          self.location_roles[guild.id][role.name] = role
+      self.main_roles.sort(key=lambda r: r.name)
+      self.location_roles.sort(key=lambda r: r.name)
 
   def get_main_role(self, ctx):
     main_role = list(set(ctx.author.roles) & set(self.main_roles[ctx.guild.id]))
@@ -57,6 +58,7 @@ class Roles(commands.Cog):
     await self.handle_react(payload)
 
   async def handle_react(self, payload):
+    self.cache_roles()
     channel = self.bot.get_channel(ROLES_CHANNEL_ID)
     if payload.message_id == LOCATION_ROLES_MSG_ID:
       matches = list(filter(lambda x: x.emote == payload.emoji.name, LOCATIONS))

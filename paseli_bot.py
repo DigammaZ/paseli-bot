@@ -20,7 +20,6 @@ class PaseliBot(Bot):
 
   async def on_ready(self):
     print('Logged in as {0.user.name}'.format(self))
-    Roles.cache_roles()
 
   def run(self, token):
     for cog in cogs:
