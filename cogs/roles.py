@@ -20,7 +20,7 @@ class Roles(commands.Cog):
     self.guild = None
 
   def cache_roles(self):
-    if not self.main_roles and not self.location_roles:
+    if not self.main_roles or not self.location_roles or not self.guild:
       self.guild = discord.Client.get_guild(self=self.bot, id=TWO_MF_GUILD_ID)
       for role in self.guild.roles:
         if role.name in self.main_role_names:
@@ -101,51 +101,16 @@ class Roles(commands.Cog):
         await ctx.send('Added main game role of **{0}**.'.format(desired_role))
       await response.delete()
 
-  @commands.command(
-    description='Manage your Round 1 location roles.',
-    usage='locationrole'
-  )
-  async def locationrole(self, ctx):
-
-    def location_role_reaction_check(reaction, user):
-      return user == ctx.author
-
-    message = await ctx.send(embed=make_location_role_embed())
-    await message.add_reaction('🍚')
-    await message.add_reaction('🍘')
-    await message.add_reaction('🍙')
-    await message.add_reaction('🎑')
-    await message.add_reaction('🌾')
-
-    try:
-      reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0,
-                                                     check=location_role_reaction_check)
-      while reaction:
-        if reaction.emoji == '🍚':
-          await self.add_or_remove_location_role(ctx, user, 'PHM')
-        elif reaction.emoji == '🍘':
-          await self.add_or_remove_location_role(ctx, user, 'MPM')
-        elif reaction.emoji == '🍙':
-          await self.add_or_remove_location_role(ctx, user, 'LWM')
-        elif reaction.emoji == '🎑':
-          await self.add_or_remove_location_role(ctx, user, 'MVM')
-        elif reaction.emoji == '🌾':
-          await self.add_or_remove_location_role(ctx, user, '池袋')
-        reaction, user = await discord.Client.wait_for(self=self.bot, event='reaction_add', timeout=30.0,
-                                                       check=location_role_reaction_check)
-    except asyncio.TimeoutError:
-      pass
-
   async def add_or_remove_location_role(self, channel, payload, location):
     member = self.guild.get_member(user_id=payload.user_id)
     for role in member.roles:
       if role.name == location:
         await member.remove_roles(role)
-        msg = await channel.send('Role for {0} removed.'.format(location))
+        msg = await channel.send('{0} role for @{1} removed.'.format(location, member))
         await asyncio.sleep(5)
         await msg.delete()
         return
     await member.add_roles(self.location_roles[location])
-    msg = await channel.send('Role for {0} added.'.format(location))
+    msg = await channel.send('{0} role for @{1} added.'.format(location, member))
     await asyncio.sleep(5)
     await msg.delete()
