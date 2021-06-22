@@ -61,7 +61,7 @@ class Roles(commands.Cog):
         await self.add_or_remove_location_role(channel, payload, matches[0].role_name)
 
     elif payload.message_id == MAIN_ROLES_MSG_ID:
-      matches = list(filter(lambda x: x.emote == payload.emoji.name, RHYTHM_GAMES))
+      matches = list(filter(lambda x: x.emote_id == payload.emoji.id, RHYTHM_GAMES))
       if matches:
         await self.add_or_remove_game_role(channel, payload, matches[0].role_name)
 
