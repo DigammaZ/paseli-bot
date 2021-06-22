@@ -28,10 +28,6 @@ class Roles(commands.Cog):
         if role.name in self.location_role_names:
           self.location_roles[role.name] = role
 
-  def get_main_role(self, ctx):
-    main_role = list(set(ctx.author.roles) & set(self.main_roles[ctx.guild.id]))
-    return main_role[0] if main_role else None
-
   @commands.command(
     description='Initialize role embed messages.',
     usage='initrolesembed'
@@ -69,37 +65,31 @@ class Roles(commands.Cog):
       if matches:
         await self.add_or_remove_game_role(channel, payload, matches[0].role_name)
 
-  @commands.command(
-    description='Manage your main game role.',
-    usage='gamerole'
-  )
-  async def gamerole(self, ctx):
-    current_main_role = self.get_main_role(ctx)
+  def get_main_role(self, member):
+    main_role = list(set(member.roles) & set(self.main_roles.values()))
+    return main_role[0] if main_role else None
 
-    def main_role_option_check(msg):
-      return msg.author == ctx.author and msg.channel == ctx.channel and int(msg.content) in list(
-        range(len(self.main_roles[ctx.guild.id]) + 1))
 
+  async def add_or_remove_game_role(self, channel, payload, game):
+    member = self.guild.get_member(user_id=payload.user_id)
+    for role in member.roles:
+      if role.name == game:
+        await member.remove_roles(role)
+        msg = await channel.send('{0} role for <@{1}> removed.'.format(game, payload.user_id))
+        await asyncio.sleep(5)
+        await msg.delete()
+        return
+
+    current_main_role = self.get_main_role(member)
     if current_main_role:
-      await ctx.send(
-        'Your current main game role: **{0}**.\nEnter 0 to delete your main game role.\nEnter one of the numbers to '
-        'change your main game role.'.format(
-          current_main_role))
+      await member.remove_roles(current_main_role)
+      await member.add_roles(self.main_roles[game])
+      msg = await channel.send('{0} role replaced with {1} for <@{2}>.'.format(current_main_role.name, game, payload.user_id))
     else:
-      await ctx.send('You currently do not have a main game role.\nEnter one of the numbers to add a main game role.')
-    await ctx.send('\n'.join(['**{0}**: {1}'.format(i + 1, v) for i, v in enumerate(self.main_roles[ctx.guild.id])]))
-
-    response = await discord.Client.wait_for(self=self.bot, event='message', timeout=30, check=main_role_option_check)
-    if response:
-      if current_main_role:
-        await ctx.author.remove_roles(current_main_role)
-        await ctx.send('Deleted current main game role of **{0}**.'.format(current_main_role))
-      choice = int(response.content) - 1
-      if choice != -1:
-        desired_role = self.main_roles[ctx.guild.id][choice]
-        await ctx.author.add_roles(desired_role)
-        await ctx.send('Added main game role of **{0}**.'.format(desired_role))
-      await response.delete()
+      await member.add_roles(self.main_roles[game])
+      msg = await channel.send('{0} role for <@{1}> added.'.format(game, payload.user_id))
+    await asyncio.sleep(5)
+    await msg.delete()
 
   async def add_or_remove_location_role(self, channel, payload, location):
     member = self.guild.get_member(user_id=payload.user_id)
