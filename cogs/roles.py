@@ -75,7 +75,7 @@ class Roles(commands.Cog):
     for role in member.roles:
       if role.name == game:
         await member.remove_roles(role)
-        msg = await channel.send('{0} role for <@{1}> removed.'.format(game, payload.user_id))
+        msg = await channel.send('{0} role removed for <@{1}>.'.format(game, payload.user_id))
         await asyncio.sleep(5)
         await msg.delete()
         return
@@ -84,10 +84,10 @@ class Roles(commands.Cog):
     if current_main_role:
       await member.remove_roles(current_main_role)
       await member.add_roles(self.main_roles[game])
-      msg = await channel.send('{0} role replaced with {1} for <@{2}>.'.format(current_main_role.name, game, payload.user_id))
+      msg = await channel.send('{0} role replaced with {1} role for <@{2}>.'.format(current_main_role.name, game, payload.user_id))
     else:
       await member.add_roles(self.main_roles[game])
-      msg = await channel.send('{0} role for <@{1}> added.'.format(game, payload.user_id))
+      msg = await channel.send('{0} role added for <@{1}>.'.format(game, payload.user_id))
     await asyncio.sleep(5)
     await msg.delete()
 
@@ -96,11 +96,11 @@ class Roles(commands.Cog):
     for role in member.roles:
       if role.name == location:
         await member.remove_roles(role)
-        msg = await channel.send('{0} role for <@{1}> removed.'.format(location, payload.user_id))
+        msg = await channel.send('{0} role removed for <@{1}>.'.format(location, payload.user_id))
         await asyncio.sleep(5)
         await msg.delete()
         return
     await member.add_roles(self.location_roles[location])
-    msg = await channel.send('{0} role for <@{1}> added.'.format(location, payload.user_id))
+    msg = await channel.send('{0} role added for <@{1}>.'.format(location, payload.user_id))
     await asyncio.sleep(5)
     await msg.delete()
