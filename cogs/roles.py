@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 
-from constants import ROLES_CHANNEL_ID, LOCATION_ROLES_MSG_ID, MAIN_ROLES_MSG_ID
+from constants import ROLES_CHANNEL_ID, LOCATION_ROLES_MSG_ID, MAIN_ROLES_MSG_ID, TWO_MF_GUILD_ID
 
 from models.locations import LOCATIONS
 from models.rhythm_games import RHYTHM_GAMES
@@ -14,28 +14,23 @@ class Roles(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
     self.main_role_names = map(lambda x: x.role_name, RHYTHM_GAMES)
-    self.main_roles = {}
+    self.main_roles = []
     self.location_role_names = map(lambda x: x.role_name, LOCATIONS)
-    self.location_roles = {}
+    self.location_roles = []
+    self.cache_roles(self.bot.get_guild(TWO_MF_GUILD_ID))
 
-  def cache_main_roles(self, guild):
-    if guild.id not in self.main_roles:
-      self.main_roles[guild.id] = []
-      for role in guild.roles:
-        if role.name in self.main_role_names:
-          self.main_roles[guild.id].append(role)
-        self.main_roles[guild.id].sort(key=lambda r: r.name)
+  def cache_roles(self, guild):
+    for role in guild.roles:
+      if role.name in self.main_role_names:
+        self.main_roles.append(role)
+      if role.name in self.location_role_names:
+        self.location_roles[guild.id][role.name] = role
+    self.main_roles.sort(key=lambda r: r.name)
+    self.location_roles.sort(key=lambda r: r.name)
 
   def get_main_role(self, ctx):
     main_role = list(set(ctx.author.roles) & set(self.main_roles[ctx.guild.id]))
     return main_role[0] if main_role else None
-
-  def cache_location_roles(self, guild):
-    if guild.id not in self.location_roles:
-      self.location_roles[guild.id] = {}
-      for role in guild.roles:
-        if role.name in self.location_role_names:
-          self.location_roles[guild.id][role.name] = role
 
   @commands.command(
     description='Initialize role embed messages.',
@@ -64,18 +59,20 @@ class Roles(commands.Cog):
   async def handle_react(self, payload):
     channel = self.bot.get_channel(ROLES_CHANNEL_ID)
     if payload.message_id == LOCATION_ROLES_MSG_ID:
-      return
+      matches = list(filter(lambda x: x.emote == payload.emoji.name, LOCATIONS))
+      if matches:
+        await self.add_or_remove_location_role(channel, payload, matches[0].role_name)
+
     elif payload.message_id == MAIN_ROLES_MSG_ID:
-      message = await channel.send(payload.emoji.name)
-      await asyncio.sleep(10)
-      await message.delete()
+      matches = list(filter(lambda x: x.emote == payload.emoji.name, RHYTHM_GAMES))
+      if matches:
+        await self.add_or_remove_game_role(channel, payload, matches[0].role_name)
 
   @commands.command(
     description='Manage your main game role.',
     usage='gamerole'
   )
   async def gamerole(self, ctx):
-    self.cache_main_roles(ctx.guild)
     current_main_role = self.get_main_role(ctx)
 
     def main_role_option_check(msg):
@@ -108,7 +105,6 @@ class Roles(commands.Cog):
     usage='locationrole'
   )
   async def locationrole(self, ctx):
-    self.cache_location_roles(ctx.guild)
 
     def location_role_reaction_check(reaction, user):
       return user == ctx.author
@@ -139,11 +135,11 @@ class Roles(commands.Cog):
     except asyncio.TimeoutError:
       pass
 
-  async def add_or_remove_location_role(self, ctx, user, location):
-    for role in user.roles:
+  async def add_or_remove_location_role(self, channel, payload, location):
+    for role in payload.user.roles:
       if role.name == location:
-        await ctx.author.remove_roles(role)
-        await ctx.send('Role for {0} removed.'.format(location))
-        return
-    await ctx.author.add_roles(self.location_roles[ctx.guild.id][location])
-    await ctx.send('Role for {0} added.'.format(location))
+        await user.remove_roles(role)
+        await channel.send('Role for {0} removed.'.format(location))
+      else:
+        await user.add_roles(self.location_roles[location])
+        await channel.send('Role for {0} added.'.format(location))
