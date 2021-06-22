@@ -13,9 +13,9 @@ from services.embed_service import make_location_role_embed, make_main_role_embe
 class Roles(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
-    self.main_role_names = map(lambda x: x.role_name, RHYTHM_GAMES)
+    self.main_role_names = list(map(lambda x: x.role_name, RHYTHM_GAMES))
     self.main_roles = {}
-    self.location_role_names = map(lambda x: x.role_name, LOCATIONS)
+    self.location_role_names = list(map(lambda x: x.role_name, LOCATIONS))
     self.location_roles = {}
     self.guild = None
 
