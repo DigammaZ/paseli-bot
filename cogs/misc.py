@@ -105,5 +105,4 @@ class Miscellaneous(commands.Cog):
     if member.guild.id == TWO_MF_GUILD_ID:
       channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
       await channel.send(
-        "Welcome {0}!\nUse the commands {1}gamerole and {1}locationrole to give yourself roles.".format(member.name,
-                                                                                                        PREFIX))
+        "Welcome {0}!\nBe sure to check out #roles!".format(member.name)
