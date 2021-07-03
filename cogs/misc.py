@@ -106,3 +106,4 @@ class Miscellaneous(commands.Cog):
       channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
       await channel.send(
         "Welcome {0}!\nBe sure to check out #roles!".format(member.name)
+      )
