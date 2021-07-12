@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
   @Bot.listen(name='on_command_error', self=bot)
   async def on_command_error(ctx, error):
-    await ctx.send('{0}\nUsage: `{1}{2}`'.format(error, PREFIX, ctx.command.usage))
+    await ctx.send('{0}\n{1}\nUsage: `{2}{3}`'.format(error, error.message, PREFIX, ctx.command.usage))
 
 
   bot.run(TOKEN)
