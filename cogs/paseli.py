@@ -16,7 +16,8 @@ async def amounts_check(ctx):
   try:
     get_amounts()
   except FileNotFoundError:
-    ctx.send('Could not load `amounts.json`.')
+    raise commands.CommandError('Could not load `amounts.json`.')
+  return True
 
 
 async def balance_check(ctx):
