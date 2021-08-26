@@ -47,4 +47,9 @@ SDVX = RhythmGame(logo_url='https://remywiki.com/images/9/99/SDVX_EXCEED_GEAR.pn
                   emote_id=428463105895563274,
                   name='Sound Voltex',
                   role_name='SDVX Main')
-RHYTHM_GAMES = [DANCERUSH, DDR, GITADORA, GROOVE_COASTER, IIDX, POPN, PUMP, SDVX]
+WACCA = RhythmGame(logo_url='https://www.otaquest.com/wp-content/uploads/2020/01/wacca-1024x376.jpg',
+                   emote='<:Disgusting:618843330968551443>',
+                   emote_id=618843330968551443,
+                   name='WACCA',
+                   role_name='Wacca Main')
+RHYTHM_GAMES = [DANCERUSH, DDR, GITADORA, GROOVE_COASTER, IIDX, POPN, PUMP, SDVX, WACCA]

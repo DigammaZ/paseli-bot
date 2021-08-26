@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
 
 from constants import ROLES_CHANNEL_ID, LOCATION_ROLES_MSG_ID, MAIN_ROLES_MSG_ID, TWO_MF_GUILD_ID
@@ -18,6 +19,9 @@ class Roles(commands.Cog):
     self.location_role_names = list(map(lambda x: x.role_name, LOCATIONS))
     self.location_roles = {}
     self.guild = None
+    self.sched = AsyncIOScheduler(daemon=True)
+    self.sched.add_job(func=self.update_main_role_embed, trigger='cron', args=[], max_instances=1, minute='0,15,30,45')
+    self.sched.start()
 
   def cache_roles(self):
     if not self.main_roles or not self.location_roles or not self.guild:
@@ -27,6 +31,11 @@ class Roles(commands.Cog):
           self.main_roles[role.name] = role
         if role.name in self.location_role_names:
           self.location_roles[role.name] = role
+
+  async def update_main_role_embed(self):
+    channel = self.bot.get_channel(ROLES_CHANNEL_ID)
+    main_role_message = await channel.fetch_message(MAIN_ROLES_MSG_ID)
+    await main_role_message.edit(content='', embed=make_main_role_embed())
 
   @commands.command(
     description='Initialize role embed messages.',
