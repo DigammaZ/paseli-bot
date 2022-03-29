@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from services.jisho_service import search_jisho
-from services.time_service import get_current_japan_time
+from services.time_service import get_current_california_time, get_current_japan_time
 
 
 class Japan(commands.Cog):
@@ -30,6 +30,13 @@ class Japan(commands.Cog):
   )
   async def jst(self, ctx):
     await ctx.send(':japan: {0}'.format(get_current_japan_time()))
+
+  @commands.command(
+    description='Get the current time in California.',
+    usage='pt'
+  )
+  async def pt(self, ctx):
+    await ctx.send(':taco: {0}'.format(get_current_california_time()))
 
   async def temp_check(ctx):
     args = ctx.message.content.split()[1:]
